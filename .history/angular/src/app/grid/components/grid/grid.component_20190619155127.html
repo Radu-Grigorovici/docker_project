@@ -1,0 +1,17 @@
+<div class="toolbar">
+  <button (click)="addItem()">Add Item</button>
+</div>
+<gridster [options]="options">
+  <gridster-item *ngFor="let item of grid" [item]="item">
+      <ng-container
+      appGridItem
+      [componentRef]="getComponentRef(item.id)"
+      >
+      </ng-container>
+      <button
+      (click)="deleteItem(item)"
+    >
+      Delete Item
+    </button>
+  </gridster-item>
+</gridster>

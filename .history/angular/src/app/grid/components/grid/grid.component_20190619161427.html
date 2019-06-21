@@ -1,0 +1,31 @@
+<div class="toolbar">
+  <button (click)="addItem()">Add Item</button>
+  <div
+  class="draggable"
+  draggable="true"
+  (dragend)="dropItem('gridItem')"
+>
+  Example 1
+</div>
+<div
+  class="draggable"
+  draggable="true"
+  (dragend)="dropItem('pieChart')"
+>
+  Example 2
+</div>
+</div>
+<gridster [options]="options">
+  <gridster-item *ngFor="let item of grid" [item]="item" (dragover)="setDropId(item.id)">
+      <!-- <ng-container
+      appGridItem
+      [componentRef]="getComponentRef(item.id)"
+      > -->
+      <!-- </ng-container> -->
+      <button
+      (click)="deleteItem(item)"
+    >
+      Delete Item
+    </button>
+  </gridster-item>
+</gridster>

@@ -1,0 +1,13 @@
+<div class="toolbar">
+  <button (click)="addItem()">Add Item</button>
+  <ng-template #chartContainer></ng-template>
+  <button (click)="createComponent()">Make component</button>
+</div>
+<gridster [options]="options">
+  <gridster-item *ngFor="let item of grid" [item]="item" #chartContainer>
+    <!-- <ng-template #chartContainer></ng-template>
+    {{item | json}}
+    <button (click)="deleteItem(item)">x</button> -->
+  </gridster-item>
+</gridster>
+
