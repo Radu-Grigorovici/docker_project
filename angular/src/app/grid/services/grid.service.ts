@@ -1,4 +1,4 @@
-import { Injectable, ComponentFactory, ComponentFactoryResolver } from '@angular/core';
+import { Injectable, ComponentFactory, ComponentFactoryResolver, OnChanges } from '@angular/core';
 import { GridsterConfig, GridsterItem } from 'angular-gridster2';
 import { UUID } from 'angular2-uuid';
 import { PieChartComponent } from '../components/pie-chart/pie-chart.component';
@@ -6,6 +6,11 @@ import { PieChartComponent } from '../components/pie-chart/pie-chart.component';
 export interface IComponent {
   id: string;
   componentRef: string;
+}
+
+export interface Grid {
+  name: string;
+  data: object;
 }
 
 @Injectable({
@@ -26,36 +31,34 @@ export class GridService {
     minRows: 3, // minimum amount of rows in the grid
     maxRows: 12, // maximum amount of rows in the grid
   };
-  public grid: GridsterItem[] = [{cols: 1, rows: 1, y: 0, x: 0, resizeEnabled: false, id: UUID.UUID(), }];
+
+  public grid: GridsterItem[] = JSON.parse(localStorage.getItem('grid')) || [];
 
   public components: IComponent[] = [];
 
   constructor( private resolver: ComponentFactoryResolver ) { }
 
+
   public addItem(): string {
     const newId = UUID.UUID();
     this.grid.push({
       cols: 2,
-      id: newId,
       rows: 1,
       x: 0,
-      y: 0
+      y: 0,
+      id: newId
     });
-    // let element = null;
-    // window.setTimeout(() => {
-    //   element = document.getElementById('trial');
-    // }, 0);
 
-    // this.createComponent(element);
+    this.storeGrid();
     return newId;
-
   }
 
   public deleteItem(id: string): void {
     const item = this.grid.find(d => d.id === id);
     this.grid.splice(this.grid.indexOf(item), 1);
-    const comp = this.components.find(c => c.id === id);
-    this.components.splice(this.components.indexOf(comp), 1);
+    this.storeGrid();
+    // const comp = this.components.find(c => c.id === id);
+    // this.components.splice(this.components.indexOf(comp), 1);
   }
 
 
@@ -64,9 +67,13 @@ export class GridService {
     return comp ? comp.componentRef : null;
   }
 
-  private createComponent(element) {
-    const factory: ComponentFactory<PieChartComponent> = this.resolver.resolveComponentFactory(PieChartComponent);
-    element.createComponent(factory);
+  public updateGrid(grid) {
+    this.grid = grid;
+    this.storeGrid();
+  }
+
+  private storeGrid() {
+    localStorage.setItem('grid', JSON.stringify(this.grid));
   }
 
 }

@@ -1,7 +1,8 @@
-import { Component, OnInit, ComponentFactoryResolver, ViewContainerRef, ViewChild, ComponentFactory } from '@angular/core';
-import { GridsterConfig, GridsterItem } from 'angular-gridster2';
+import { Component, OnInit, ComponentFactoryResolver, ViewContainerRef, ViewChild, ComponentFactory, ViewChildren, OnChanges } from '@angular/core';
+import { GridsterConfig, GridsterItem, GridsterItemComponent } from 'angular-gridster2';
 import { GridService, IComponent } from '../../services/grid.service';
 import { PieChartComponent } from '../pie-chart/pie-chart.component';
+import { BarGraphComponent } from '../bar-graph/bar-graph.component';
 
 @Component({
   selector: 'app-grid',
@@ -10,6 +11,7 @@ import { PieChartComponent } from '../pie-chart/pie-chart.component';
 })
 export class GridComponent implements OnInit {
   @ViewChild('chartContainer', { read: ViewContainerRef }) container;
+  @ViewChildren('chartItem', { read: ViewContainerRef }) items;
 
 
   get options(): GridsterConfig {
@@ -32,7 +34,13 @@ export class GridComponent implements OnInit {
 
   public addItem() {
     const id = this.gridService.addItem();
-    this.createComponent(id);
+    window.setTimeout(() => {
+      const gridItems: ViewContainerRef[] = this.items._results;
+      console.log('TCL: GridComponent -> addItem -> gridItems', gridItems);
+      const viewContainerRef = gridItems.find((containRef) =>  containRef.element.nativeElement.id === id);
+      console.log('TCL: GridComponent -> addItem -> viewContainerRef', viewContainerRef);
+      this.createComponent(viewContainerRef);
+    });
   }
 
   public deleteItem(item) {
@@ -40,17 +48,18 @@ export class GridComponent implements OnInit {
     this.gridService.deleteItem(item.id);
   }
 
-  private async createComponent(id) {
-    console.log('TCL: GridComponent -> createComponent -> id', id);
-    // let container: any;
-    const foo = null;
-    @ViewChild(id, { read: ViewContainerRef }) foo;
-    window.setTimeout(() => {
-      console.log('TCL: GridComponent -> createComponent -> container', container);
-      const factory: ComponentFactory<PieChartComponent> = this.resolver.resolveComponentFactory(PieChartComponent);
-      container.createComponent(factory);
-    }, 0 );
+  private async createComponent(viewContainerRef) {
+    const type = Math.round( Math.random());
+    const pieChart: ComponentFactory<PieChartComponent> = this.resolver.resolveComponentFactory(PieChartComponent);
+    const barGraph: ComponentFactory<PieChartComponent> = this.resolver.resolveComponentFactory(BarGraphComponent);
+    viewContainerRef.createComponent(type ? pieChart : barGraph);
   }
 
+  public updateGrid(grid) {
+    window.setTimeout(() => {
+      console.log('TCL: GridComponent -> updateGrid -> grid', grid);
+      this.gridService.updateGrid(grid);
+    }, 0);
+  }
 
 }
